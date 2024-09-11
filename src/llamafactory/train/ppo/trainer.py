@@ -257,6 +257,7 @@ class CustomPPOTrainer(PPOTrainer, Trainer):
                 rewards.extend(mini_batch_rewards)
 
             # Run PPO step
+            print("TRAINING STARTS!!! - trainer")
             self.model.train()
             stats = self.step(queries, responses, rewards)
             self.tokenizer.padding_side = "left"  # restore padding side

@@ -1,0 +1,64 @@
+### model
+# model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+model_name_or_path: Qwen/Qwen2-0.5B
+# model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+disable_gradient_checkpointing: false
+
+### method
+stage: pt
+do_train: true
+finetuning_type: full
+# link: https://github.com/hiyouga/LLaMA-Factory/issues/5252
+# https://deepspeed.readthedocs.io/en/latest/activation-checkpointing.html
+deepspeed: /root/bittensor_llama_factory/LLaMA-Factory/examples/deepspeed/ds_z3_config.json
+
+### dataset
+dataset: fineweb_edu
+# eval_dataset: identity,alpaca_en_demo
+# max_samples: 100000
+# Enabling contamination free packing - https://github.com/MeetKai/functionary/tree/main/functionary/train/packing
+# packing: true
+
+# Supervised Fine Tuning (SFT) mode should be set to true (would require stf + template
+stage: sft
+template: qwen
+neat_packing: true
+
+
+streaming: true
+max_steps: 100000
+cutoff_len: 2048  # 4096
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: saves/llama3-8b/fineweb_edu_bittensor/pretrain
+logging_steps: 10
+save_steps: 2000 #2k 기준이라서 approx 140G
+plot_loss: true
+overwrite_output_dir: true
+
+### train training_args
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 8
+adam_beta1: 0.9
+adam_beta2: 0.95
+learning_rate: 1.0e-5
+optim: adamw_torch
+lr_scheduler_type: cosine #Schedule with cosine scheduler type + AdamW vs schedulefree - no
+
+# schedulefree - Faster training without schedules - no need to specify the stopping time/steps in advance!
+# Currently two implementation - SGDScheduleFree & AdamWScheduleFree
+weight_decay: 0.1
+num_train_epochs: 3.0
+# warmup_ratio: 0.1  # schedulefree -no
+# warm_steps: 2000
+bf16: true
+ddp_timeout: 180000000
+
+
+### eval (dummy value fill - 그대로 넣기는 하지만 그냥 이대로 두는걸로)
+# val_size: 0.0
+# per_device_eval_batch_size: 1
+# eval_strategy: steps
+# eval_steps: 0

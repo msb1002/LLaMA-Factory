@@ -22,6 +22,9 @@ from transformers.utils import cached_file
 from ..extras.constants import DATA_CONFIG
 from ..extras.misc import use_modelscope
 
+# import sys
+# dir_path = os.path.dirname(os.path.realpath(__file__))
+# sys.path.insert(0,dir_path)
 
 @dataclass
 class DatasetAttr:
@@ -75,6 +78,11 @@ def get_dataset_list(dataset_names: Optional[Sequence[str]], dataset_dir: str) -
     r"""
     Gets the attributes of the datasets.
     """
+    print("ENTERED get_dataset_list")
+    print(f"Dataset names: {dataset_names}")
+    print(f"Dataset dir: {dataset_dir}")
+    dataset_dir = "/root/bittensor_llama_factory/LLaMA-Factory/data"
+    print(f"Dataset dir: {dataset_dir}")
     if dataset_names is None:
         dataset_names = []
 
@@ -87,6 +95,7 @@ def get_dataset_list(dataset_names: Optional[Sequence[str]], dataset_dir: str) -
             config_path = os.path.join(dataset_dir, DATA_CONFIG)
 
         try:
+            print(f"CONFIG PATH: {config_path}")
             with open(config_path, "r") as f:
                 dataset_info = json.load(f)
         except Exception as err:

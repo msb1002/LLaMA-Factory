@@ -192,6 +192,7 @@ def load_model(
 
         model.eval()
     else:
+        print("TRAINING STARTS!!! - loader")
         model.train()
 
     trainable_params, all_param = count_parameters(model)

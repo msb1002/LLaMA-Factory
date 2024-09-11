@@ -224,6 +224,7 @@ def _create_galore_optimizer(
 
     _, optim_kwargs = Trainer.get_optimizer_cls_and_kwargs(training_args)
 
+#TODO: Changing the class used for optim_class?
     if training_args.optim == "adamw_torch":
         optim_class = GaLoreAdamW
     elif training_args.optim in ["adamw_bnb_8bit", "adamw_8bit", "paged_adamw_8bit"]:

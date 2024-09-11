@@ -153,6 +153,7 @@ def prepare_model_for_training(model: "PreTrainedModel", model_args: "ModelArgum
         if not getattr(model, "supports_gradient_checkpointing", False):
             logger.warning("Current model does not support gradient checkpointing.")
         else:
+            print("CHECKPOINTING ENABLED!!")
             # use_reentrant=False might increase VRAM usage (have not been empirically verified yet)
             # According to: https://github.com/huggingface/transformers/issues/28339
             gradient_checkpointing_enable = partial(
