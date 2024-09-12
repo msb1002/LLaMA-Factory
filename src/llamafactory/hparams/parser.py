@@ -58,6 +58,7 @@ def _parse_args(parser: "HfArgumentParser", args: Optional[Dict[str, Any]] = Non
         return parser.parse_dict(args)
 
     if len(sys.argv) == 2 and sys.argv[1].endswith(".yaml"):
+        print("Parsing input yaml file")
         return parser.parse_yaml_file(os.path.abspath(sys.argv[1]))
 
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
@@ -144,7 +145,7 @@ def _check_extra_dependencies(
 
 
 def _parse_train_args(args: Optional[Dict[str, Any]] = None) -> _TRAIN_CLS:
-    parser = HfArgumentParser(_TRAIN_ARGS)
+    parser = HfArgumentParser(_TRAIN_ARGS) #TODO: HfArgumentParser refusing parser schedulefree
     return _parse_args(parser, args)
 
 

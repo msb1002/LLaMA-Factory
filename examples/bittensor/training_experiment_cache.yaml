@@ -1,3 +1,4 @@
+# LAST CACHE: 2024-09-12
 ### model - temporarily using QWEN 0.5B
 # model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
 model_name_or_path: Qwen/Qwen2-0.5B
@@ -19,7 +20,7 @@ dataset: fineweb_edu
 # Enabling contamination free packing - https://github.com/MeetKai/functionary/tree/main/functionary/train/packing
 # packing: true
 
-# 일단보류 Supervised Fine Tuning (SFT) mode should be set to true (would require stf + template)
+# Supervised Fine Tuning (SFT) mode should be set to true (would require stf + template
 # stage: sft
 # template: qwen
 # neat_packing: true
@@ -43,19 +44,14 @@ gradient_accumulation_steps: 8
 adam_beta1: 0.9
 adam_beta2: 0.95
 learning_rate: 1.0e-5
-
-# Adding custom optimizer (schedulefree) - upgrade to latest
-# https://discuss.huggingface.co/t/huggingface-transformers-longformer-optimizer-warning-adamw/14711/3
 optim: adamw_torch
-# optim: schedule_free_adamw_32bit
-# lr_scheduler_type: cosine #Schedule with cosine scheduler type + AdamW vs schedulefree - no
-# warmup_ratio: 0.1  # schedulefree -no
-warmup_steps: 2000
+lr_scheduler_type: cosine #Schedule with cosine scheduler type + AdamW vs schedulefree - no
 
 # schedulefree - Faster training without schedules - no need to specify the stopping time/steps in advance!
 # Currently two implementation - SGDScheduleFree & AdamWScheduleFree
 weight_decay: 0.1
 num_train_epochs: 3.0
+warmup_ratio: 0.1  # schedulefree -no
 bf16: true
 ddp_timeout: 180000000
 

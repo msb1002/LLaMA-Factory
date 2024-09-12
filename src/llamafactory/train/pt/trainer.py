@@ -41,6 +41,7 @@ class CustomTrainer(Trainer):
     def __init__(
         self, finetuning_args: "FinetuningArguments", processor: Optional["ProcessorMixin"], **kwargs
     ) -> None:
+        print("Initiating custom trainer")
         super().__init__(**kwargs)
         self.finetuning_args = finetuning_args
 
@@ -58,8 +59,12 @@ class CustomTrainer(Trainer):
 
     @override
     def create_optimizer(self) -> "torch.optim.Optimizer":
+        print(f"WELCOME TO PT stage creating optimizer: passed : {self.optimizer}")
         if self.optimizer is None:
             self.optimizer = create_custom_optimizer(self.model, self.args, self.finetuning_args)
+            print(f"created OPTIMIZER: {self.optimizer}")
+
+        print(f"self.optimizer: {self.optimizer}, using Trainer create_optimizer()")
         return super().create_optimizer()
 
     @override

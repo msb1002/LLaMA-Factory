@@ -31,13 +31,16 @@ from typing_extensions import override
 from ..extras.constants import IGNORE_INDEX
 from ..extras.logging import get_logger
 from ..extras.packages import is_galore_available
+from ..extras.packages import is_schedulefree_available
 from ..hparams import FinetuningArguments, ModelArguments
 from ..model import find_all_linear_modules, load_model, load_tokenizer, load_valuehead_params
 
 
 if is_galore_available():
     from galore_torch import GaLoreAdafactor, GaLoreAdamW, GaLoreAdamW8bit
-
+if is_schedulefree_available():
+    print("schedulefree available - loading package")
+    from schedulefree import AdamWScheduleFree, SGDScheduleFree
 
 if TYPE_CHECKING:
     from transformers import PreTrainedModel, Seq2SeqTrainingArguments
@@ -224,7 +227,6 @@ def _create_galore_optimizer(
 
     _, optim_kwargs = Trainer.get_optimizer_cls_and_kwargs(training_args)
 
-#TODO: Changing the class used for optim_class?
     if training_args.optim == "adamw_torch":
         optim_class = GaLoreAdamW
     elif training_args.optim in ["adamw_bnb_8bit", "adamw_8bit", "paged_adamw_8bit"]:
@@ -395,12 +397,39 @@ def _create_adam_mini_optimizer(
     logger.info("Using Adam-mini optimizer.")
     return optimizer
 
+# TODO: create schedulefree optimizer
+# Reference: https://github.com/facebookresearch/schedule_free/blob/main/schedulefree/adamw_schedulefree.py
+def _create_schedulefree_optimizer(
+    model: "PreTrainedModel",
+    training_args: "Seq2SeqTrainingArguments",
+) -> "torch.optim.Optimizer":
+    from schedulefree import AdamWScheduleFree, SGDScheduleFree
+    print("Entered _create_schedulefree_optimizer")
+    print(type(model.named_parameters()))
 
+
+    #TODO: Add the details for Schedule free optimizer
+    optimizer = AdamWScheduleFree(
+        params=model.parameters(),
+        lr=training_args.learning_rate,
+        betas=(training_args.adam_beta1, training_args.adam_beta2),
+        eps=training_args.adam_epsilon,
+        weight_decay=training_args.weight_decay,
+        warmup_steps=training_args.warmup_steps,
+    )
+
+    print(f"Using Schedule Free (default - AdamWScheduleFree) \n {optimizer}")
+    return optimizer
+
+
+# TODO: Adding schedulefree optimizer here?
 def create_custom_optimizer(
     model: "PreTrainedModel",
     training_args: "Seq2SeqTrainingArguments",
     finetuning_args: "FinetuningArguments",
 ) -> Optional["torch.optim.Optimizer"]:
+
+    print("Since given optimizer is none, we use CUSTOM OPTIMIZER")
     if finetuning_args.use_galore:
         return _create_galore_optimizer(model, training_args, finetuning_args)
 
@@ -413,12 +442,15 @@ def create_custom_optimizer(
     if finetuning_args.use_adam_mini:
         return _create_adam_mini_optimizer(model, training_args)
 
+    print("Guess we are going with schedulefree")
+    return _create_schedulefree_optimizer(model, training_args)
 
 def create_custom_scheduler(
     training_args: "Seq2SeqTrainingArguments",
     num_training_steps: int,
     optimizer: Optional["torch.optim.Optimizer"] = None,
 ) -> None:
+    print("CREATE CUSTOM SCHEDULER")
     if optimizer is not None and isinstance(optimizer, DummyOptimizer):
         optimizer_dict = optimizer.optimizer_dict
         scheduler_dict: Dict["torch.nn.Parameter", "torch.optim.lr_scheduler.LRScheduler"] = {}

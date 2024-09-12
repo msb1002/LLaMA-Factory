@@ -67,7 +67,9 @@ class CustomSeq2SeqTrainer(Seq2SeqTrainer):
 
     @override
     def create_optimizer(self) -> "torch.optim.Optimizer":
+        print("WELCOME TO SFT trainer for creating optimizer")
         if self.optimizer is None:
+            print("IS IT NONE?")
             self.optimizer = create_custom_optimizer(self.model, self.args, self.finetuning_args)
         return super().create_optimizer()
 
